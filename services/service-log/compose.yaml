@@ -1,0 +1,18 @@
+services:
+  service_log:
+    container_name: service-log
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    # environment:
+    #   - KAFKA_TOPIC_NAME=kafka-purchase
+    #   - KAFKA_SERVER=localhost
+    #   - KAFKA_PORT=9092
+    ports:
+      - 8002:8002
+    restart: "no"
+    networks:
+      - custom_network
+networks:
+  custom_network:
+    driver: bridge
