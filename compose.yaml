@@ -5,49 +5,116 @@ services:
       - "2181:2181"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
-    # networks:
-    #   - custom_network
+    networks:
+      - broker-kafka
   kafka:
     image: wurstmeister/kafka:latest
     depends_on:
       - zookeeper
     ports:
       - "9092:9092"
-      - 29092:29092
     expose:
       - "9093"
     environment:
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-#     networks:
-#       - custom_network
-# networks:
-#   custom_network:
-#     external: true
+    networks:
+      - broker-kafka
+  service_log:
+    container_name: service_log
+    build:
+      context: ./services/service-log
+      dockerfile: Dockerfile
+    ports:
+      - 8001:8001
+    restart: "always"
+    depends_on:
+      - zookeeper
+      - kafka
+      - service_ecommerce
+      - service_payment
+      - service_packaging
+      - service_shipping
+    networks:
+      - broker-kafka
+  service_dlq:
+    container_name: service_dlq
+    build:
+      context: ./services/service-dlq
+      dockerfile: Dockerfile
+    ports:
+      - 8002:8002
+    restart: "always"
+    depends_on:
+      - zookeeper
+      - kafka
+      - service_ecommerce
+      - service_payment
+      - service_packaging
+      - service_shipping
+    networks:
+      - broker-kafka
+  service_shipping:
+    container_name: service_shipping
+    build:
+      context: ./services/service-shipping
+      dockerfile: Dockerfile
+    ports:
+      - 8003:8003
+    restart: "always"
+    depends_on:
+      - zookeeper
+      - kafka
+      - service_packaging
+    networks:
+      - broker-kafka
+  service_packaging:
+    container_name: service_packaging
+    build:
+      context: ./services/service-packaging
+      dockerfile: Dockerfile
+    ports:
+      - 8004:8004
+    restart: "always"
+    depends_on:
+      - zookeeper
+      - kafka
+      - service_payment
+    networks:
+      - broker-kafka
+  service_payment:
+    container_name: service_payment
+    build:
+      context: ./services/service-payment
+      dockerfile: Dockerfile
+    ports:
+      - 8005:8005
+    restart: "always"
+    depends_on:
+      - zookeeper
+      - kafka
+      - service_ecommerce
+    networks:
+      - broker-kafka
+  service_ecommerce:
+    container_name: service_ecommerce
+    build:
+      context: ./services/service-ecommerce
+      dockerfile: Dockerfile
+    ports:
+      - 8006:8006
+    restart: "on-failure"
+    depends_on:
+      - zookeeper
+      - kafka
+    networks:
+      - broker-kafka
 
-  # kafka-init:
-  #   image: wurstmeister/kafka:latest
-  #   # networks:
-  #   #   - container
-  #   command: [ "/bin/bash", "-c", "/create_topic.sh"]
-  #   environment:
-  #     - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-  #     - TOPIC_LOG=kafka-log
-  #     - TOPIC_DLQ=dlq-topic
-  #     - TOPIC_ECOMMERCE=kafka-purchase
-  #     - TOPIC_PAYMENT=kafka-approval
-  #     - TOPIC_DISPATCH=kafka-dispatch
-  #     - TOPIC_SHIPPING=kafka-shipping
-  #   depends_on:
-  #     kafka:
-  #       condition: service_started
-  #   volumes:
-  #     - type: bind
-  #       source: ./create_topic.sh
-  #       target: /create_topic.sh
-  #   init: true
+networks:
+  broker-kafka:
+    driver: bridge

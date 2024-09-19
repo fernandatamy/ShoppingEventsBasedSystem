@@ -3,9 +3,9 @@ from kafka import KafkaConsumer
 from kafka import KafkaProducer
 import random
 
-# adress = 'kafka:9093'
+adress = 'kafka:9093'
 
-adress = 'localhost:9092'
+# adress = 'localhost:9092'
 
 def generate_order_message(index):
     the_dt = str(datetime.datetime.now())
