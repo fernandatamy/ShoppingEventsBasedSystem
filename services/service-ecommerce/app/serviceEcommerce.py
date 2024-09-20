@@ -10,6 +10,6 @@ def service_ecommerce(index):
         print("Houve um erro. "+str(ex))
         send_to_queue('dlq-topic', 0, str(ex))
 
-for index in range(100):
+for index in range(1000):
     service_ecommerce(index)
 

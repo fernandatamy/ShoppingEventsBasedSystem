@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f compose.yaml
+    kompose.version: 1.31.2 (a92241f79)
+  labels:
+    io.kompose.service: service-log
+  name: service-log
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      io.kompose.service: service-log
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f compose.yaml
+        kompose.version: 1.31.2 (a92241f79)
+      labels:
+        io.kompose.network/shoppingeventsbasedsystem-broker-kafka: "true"
+        io.kompose.service: service-log
+    spec:
+      containers:
+        - image: service-log
+          name: service-log
+          ports:
+            - containerPort: 8001
+              hostPort: 8001
+              protocol: TCP
+          resources: 
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+      restartPolicy: Always
+status: {}
