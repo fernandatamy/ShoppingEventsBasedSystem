@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f compose.yaml
+    kompose.version: 1.31.2 (a92241f79)
+  labels:
+    io.kompose.service: service-payment
+  name: service_payment
+spec:
+  ports:
+    - name: "8005"
+      port: 8005
+      targetPort: 8005
+  selector:
+    io.kompose.service: service-payment
+status:
+  loadBalancer: {}
