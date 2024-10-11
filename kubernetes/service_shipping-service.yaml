@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    kompose.cmd: kompose convert -f compose.yaml
+    kompose.cmd: kompose.exe -f compose.yaml -f compose.yaml convert
     kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: service-shipping
