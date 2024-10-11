@@ -2,9 +2,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   annotations:
-    kompose.cmd: kompose convert -f compose.yaml
+    kompose.cmd: kompose.exe -f compose.yaml -f compose.yaml convert
     kompose.version: 1.31.2 (a92241f79)
-  creationTimestamp: null
   labels:
     io.kompose.network/shoppingeventsbasedsystem-broker-kafka: "true"
     io.kompose.service: service-ecommerce

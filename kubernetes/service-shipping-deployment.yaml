@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -f compose.yaml
+    kompose.cmd: kompose.exe -f compose.yaml -f compose.yaml convert
     kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: service-shipping
@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert -f compose.yaml
+        kompose.cmd: kompose.exe -f compose.yaml -f compose.yaml convert
         kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/shoppingeventsbasedsystem-broker-kafka: "true"
@@ -29,12 +29,6 @@ spec:
             - containerPort: 8003
               hostPort: 8003
               protocol: TCP
-          resources: 
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
-            requests:
-              cpu: "50m"
-              memory: "128Mi"
+          resources: {}
       restartPolicy: Always
 status: {}
